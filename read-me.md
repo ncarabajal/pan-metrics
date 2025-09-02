@@ -7,10 +7,6 @@ Collector → Postgres → FastAPI → React (Vite/nginx), all wired with Docker
 - The **API** serves latest device health + details from Postgres at `/api/*`.
 - The **Web UI** (React) calls the API (proxied by nginx) and renders a live table.
 
-<p align="center">
-  <img alt="PAN Metrics Diagram" src="https://user-images.githubusercontent.com/placeholder/diagram.png" width="640">
-</p>
-
 ---
 
 ## Quick start
