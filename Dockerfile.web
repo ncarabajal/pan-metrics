@@ -1,0 +1,19 @@
+# Dockerfile.web  (repo root)
+# Build Vite app
+FROM node:20-alpine AS build
+WORKDIR /app
+# Install deps
+COPY pan-metrics-dashboard/package*.json ./
+RUN npm ci
+# Copy source and build
+COPY pan-metrics-dashboard/ ./
+ARG VITE_API_BASE=/api
+ENV VITE_API_BASE=$VITE_API_BASE
+RUN npm run build
+
+# Serve with nginx
+FROM nginx:1.27-alpine
+# Use your existing nginx.conf at repo root
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80

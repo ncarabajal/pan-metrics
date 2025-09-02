@@ -1,0 +1,32 @@
+# macOS / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.ptyhon-version
+.pytest_cache/
+
+# Node / Vite (frontend)
+pan-metrics-dashboard/node_modules/
+pan-metrics-dashboard/.vite/
+pan-metrics-dashboard/dist/
+pan-metrics-dashboard/.eslintcache
+
+# Docker artifacts (don’t keep local DB/data)
+pgdata/
+data/
+*.log
+
+# Project runtime outputs
+device_metrics.json
+device_metrics.csv
+
+# Secrets / local config
+.env
+collector/config.yaml
+docker-compose.override.yml

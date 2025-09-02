@@ -1,0 +1,15 @@
+panoramas:
+  - name: 
+    ip: 
+  - name: 
+    ip: 
+  - name: 
+    ip: 
+  - name: 
+    ip: 
+  - name: 
+    ip: 
+
+credentials:
+  username: 'USERNAME'
+  password: 'PASSWORD'

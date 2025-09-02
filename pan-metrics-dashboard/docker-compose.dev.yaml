@@ -1,0 +1,30 @@
+# docker-compose.dev.yml
+services:
+  api:
+    # Auto-reload FastAPI when files change
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # live-edit API code
+      - ./api:/app/api
+      # share the JSON produced by the collector
+      - ./device_metrics.json:/app/device_metrics.json
+
+  collector:
+    # Shorter loop for development; or run "once" (see commands below)
+    environment:
+      - SLEEP_SECONDS=60
+    volumes:
+      # live-edit collector code & config
+      - ./collector:/app/collector
+      - ./config.yaml:/app/config.yaml:ro
+      # write/read the same JSON file on your host
+      - ./device_metrics.json:/app/device_metrics.json
+    # Optional: run continuously in a short loop in dev
+    entrypoint: /bin/sh -lc 'python -m collector.metrics_collector || true; sleep ${SLEEP_SECONDS:-60}; exec "$0" "$@"'
+
+  web:
+    # No special dev change here (we serve the built assets via nginx).
+    # If you prefer Vite HMR later, we can add a separate dev service.
+    volumes: []
