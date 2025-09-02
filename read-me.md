@@ -1,57 +1,38 @@
-# 0) move to project root
-cd ~/Desktop/PythonProjects/pan-metrics
-source .venv/bin/activate
+# PAN Metrics
 
-# 1) run collector for fresh data
-python -m collector.metrics_collector
+Collector → Postgres → FastAPI → React (Vite/nginx), all wired with Docker Compose.
 
-# 2) start API in background
-uvicorn api.main:app --port 8000 &   # note trailing &
+- **Collector** talks to Panorama + devices over XML-API and writes a snapshot to JSON/CSV.
+- A small **ingester** loads that snapshot into **Postgres**.
+- The **API** serves latest device health + details from Postgres at `/api/*`.
+- The **Web UI** (React) calls the API (proxied by nginx) and renders a live table.
 
-# 3) start dashboard
-cd pan-metrics-dashboard
-npm run dev
+<p align="center">
+  <img alt="PAN Metrics Diagram" src="https://user-images.githubusercontent.com/placeholder/diagram.png" width="640">
+</p>
 
-Bring up services (one by one)
-# Database (start first)
+---
+
+## Quick start
+
+```bash
+# 1) Clone this repo
+git clone https://github.com/ncarabajal/pan-metrics.git
+cd pan-metrics
+
+# 2) Create your local env & config (edit with real values)
+cp .env.example .env
+cp collector/config.example.yaml collector/config.yaml
+
+# 3) Build images
+docker compose build
+
+# 4) Bring up Postgres first (wait until healthy)
 docker compose up -d db
 
-# API (wait for db healthy if needed)
-docker compose up -d api
+# 5) Bring up the rest
+docker compose up -d api web collector
 
-# Web (nginx + static site)
-docker compose up -d web
-
-# Collector
-docker compose up -d collector
-
-Bring up everything
-docker compose up -d
-
-Rebuild + restart a single service (when code changed)
-# e.g., API changed
-docker compose build api
-docker compose up -d api
-# or in one go:
-docker compose up -d --no-deps --build api
-
-Useful helpers
-# Status
+# 6) Check everything
 docker compose ps
-
-# Logs (tail)
-docker compose logs -f db
-docker compose logs -f api
-docker compose logs -f web
-docker compose logs -f collector
-
-# Restart a service
-docker compose restart api
-
-# Stop a service
-docker compose stop collector
-
-# Recreate (if env changed)
-docker compose up -d --force-recreate api
-
-You said:
+curl -s http://localhost:8080/api/health | jq
